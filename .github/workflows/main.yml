@@ -1,0 +1,42 @@
+name: Build and Push .NET Docker Image to Azure
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to main branch
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up .NET SDK
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x  # replace with your .NET version
+
+      # Step 3: Log in to Azure
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}  # Azure service principal JSON
+
+      # Step 4: Build Docker image
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/dotnet-image:latest .
+
+      # Step 5: Log in to ACR
+      - name: Log in to ACR
+        run: |
+          echo ${{ secrets.ACR_PASSWORD }} | docker login ${{ secrets.ACR_NAME }}.azurecr.io -u ${{ secrets.ACR_USERNAME }} --password-stdin
+
+      # Step 6: Push Docker image to ACR
+      - name: Push Docker image
+        run: |
+          docker push ${{ secrets.ACR_NAME }}.azurecr.io/myapp:latest
