@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:                    
-      ACR_NAME: mycontainerss                
+      ACR_NAME: anustharegistry               
       AZURE_APP_SERVICE: devops-practices
       RESOURCE_GROUP: devops-practices_group
 
@@ -31,16 +31,16 @@ jobs:
 
      
       - name: Build Docker Image
-        run: docker build -t mycontainerss.azurecr.io/new-image:latest .
+        run: docker build -t anustharegistry.azurecr.io/dotnet-image:latest .
 
       - name: Log in to ACR
-        run: az acr login --name mycontainerss
+        run: az acr login --name anustharegistry
 
       - name: Push Docker Image
-        run: docker push mycontainerss.azurecr.io/new-image:latest
+        run: docker push anustharegistry.azurecr.io/dotnet-image:latest
 
       - name: Deploy to Azure App Service (Container)
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_APP_SERVICE }}
-          images: mycontainerss.azurecr.io/new-image:latest
+          images: anustharegistry.azurecr.io/dotnet-image:latest
